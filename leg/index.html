@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>LA Fest Legacy - Cinematic Universe</title>
+    <link rel="stylesheet" href="../nav.css">
+    <link rel="icon" type="image/png" href="lafestlogo26favicon.png" sizes="34x34"/>
+
+    <style>
+       @font-face {
+        font-family: 'panchang';
+        src: url('../contacts-main/Panchang-Regular.woff');
+       }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #050514;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #ui {
+            position: fixed;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            color: #ffd700;
+            /* font-family: Arial; */
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* ---------------- MODAL ---------------- */
+        #modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-family: 'panchang', sans-serif;
+        }
+
+        #box {
+            width: min(520px, 90vw);
+            padding: 30px 70px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(100px);
+            border: 2px solid rgba(6, 20, 102, 0.994);
+            color: white;
+            /* font-family: sans-serif; */
+        }
+
+        .year,
+        .title {
+            font-size: 24px;
+            color: #155386;
+            margin-bottom: 16px;
+        }
+
+        .title {
+            /* font-size: 14px; */
+            opacity: 0.85;
+            margin-bottom: 16px;
+        }
+
+        .desc {
+            font-size: 12px;
+            line-height: 2;
+            opacity: 0.9;
+            text-align: justify;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            color: white;
+        }
+
+        .navbar {
+            background-color: #000000;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="nav-wrapper">
+
+  <div class="nav-container" id="navContainer">
+
+    <!-- Left links -->
+    <div class="nav-left">
+      <a href="../index.html">HOME</a>
+      <a href="../rules/index.html">RULES</a>
+    </div>
+
+    <!-- Center image -->
+    <div class="nav-center">
+      <img src="../visorwlogoinit.png" alt="logo" id="navToggle">
+    </div>
+
+    <!-- Right links -->
+    <div class="nav-right">
+      <a href="../eventsv1-main/index.html">EVENTS</a>
+      <a href="../contacts-main/index.html">CONTACTS</a>
+    </div>
+
+  </div>
+
+</div>
+    <!-- 
+    <div id="ui">
+        <div>LA FEST LEGACY • CINEMATIC UNIVERSE</div>
+        <div>Scroll + Click Years</div>
+    </div> -->
+
+    <div id="modal">
+        <div id="box">
+            <div class="close" onclick="closeModal()">✕</div>
+            <div class="year" id="mYear"></div>
+            <div class="title" id="mTitle"></div>
+            <div class="desc" id="mDesc"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+    <script>
+
+        /* ---------------- SCENE ---------------- */
+        const scene = new THREE.Scene();
+
+        /* 🔥 FIX: increased fog range so stars don’t vanish */
+        // scene.fog = new THREE.Fog(0x050514, 150, 2500);
+        // scene.fog = new THREE.Fog(0x050514, 80, 700);
+        scene.fog = new THREE.Fog(
+            0x050514,   // fog color (same as your background)
+            400,        // start fading at this distance
+            700        // fully fogged at this distance
+        );
+
+        const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 3000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(innerWidth, innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        /* ---------------- LIGHT ---------------- */
+        scene.add(new THREE.AmbientLight(0x444444));
+        const light = new THREE.PointLight(0xffd700, 2);
+        light.position.set(10, 10, 10);
+        scene.add(light);
+
+        /* ---------------- STARFIELD (FIXED PROPERLY) ---------------- */
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 22000;
+
+        const starPos = [];
+
+        /* 🔥 FIX: bigger universe so camera never exits star volume */
+        for (let i = 0; i < starCount; i++) {
+            starPos.push(
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000
+            );
+        }
+
+        starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
+
+        const stars = new THREE.Points(
+            starGeo,
+            new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 1,
+                sizeAttenuation: true
+            })
+        );
+
+        scene.add(stars);
+
+        /* ---------------- YEARS (1–26) ---------------- */
+        const items = Array.from({ length: 26 }, (_, i) => ({ index: 26 - i }));
+const yearData = {
+    26: { title: "LA Fest 2025 • ", desc: "The monochrome cassette whirs to life in vibrant neon hues, drawing you into a new iteration. Its radiance spills forth, illuminating the tales etched across the walls of time. As echoes of the past emerge from this light, carve your mark into eternity. Celebrate the Silver Jubilee of An Odyssey Relived and A Legacy Revered in the timeless realm of Life and Arts." },
+    25: { title: "LA Fest 2024 • ", desc: "The wheels of tradition turn once more. Etch your name in our legacy, for in this utopia, your flaws are your weapons. Glory be to life. Glory be to arts. Triumph awaits its encore." },
+    24: { title: "LA Fest 2023 • ", desc: "The Matrix has awakened and calls for the valiant. Immortalise your art with ardour. The quest for glory awaits you. Behold, the 23rd iteration of Life and Arts." },
+    23: { title: "LA Fest 2022 • ", desc: "The Colosseum reopens after an interlude of VI years. Here the fight isn’t over till only the winner stands. New heroes will rise as the giants fall, who will guide their legions to ultimate glory?" },
+    22: { title: "LA Fest 2017 • ", desc: "The LA Fest that never got the chance to show itself, but still was the source of inspiration for many a loyolite of the batch of 2018 and beyond. Their efforts did not go unseen…" },
+    21: { title: "LA Fest 2016 • ", desc: "The prophecy written by the ancients two decades ago has come to pass. The wheels of the celestial machinery have ever since been spinning… churning out champions. It is time to inscribe your name in the hall of legends." },
+    20: { title: "LA Fest 2015 • ", desc: "As the heavens stand still and the gates to Arcadia open… Experience the twentieth chapter of the eternal saga which celebrates the art of life." },
+    19: { title: "LA Fest 2014 • ", desc: "Empires aren't built in a day but legacy is made in one. A legacy of 18 has come to pass. Now the stars are realigning. Be a part of the supernova." },
+    18: { title: "LA Fest 2013 • ", desc: "The meticulous craftsmanship of 17 long years. A fusillade of sheer ingenuity that tugs at your heartstrings and astounds with its aesthetic appeal. We provide the plot. Unravel your story in our theatre of dreams." },
+    17: { title: "LA Fest 2012 • ", desc: "An idea to create something new… Something that would change the face of humanity in Trivandrum… An idea to bring Life and Arts together in an ethereal melting pot of talent…" },
+    16: { title: "LA Fest 2011 • ", desc: "16 years down the line, the legacy continues… LA Fest the first ever inter-school fest still holds an enviable position even in the face of present day stiff competition." },
+    15: { title: "LA Fest 2010 • ", desc: "Relive the day. Relive the art. Relive awesomeness. Relive the art of waging wars on stage. Relive LA Fest 2010, where there was life in every art." },
+    14: { title: "LA Fest 2009 • ", desc: "When the Indoor Stadium's arches first embraced ambition, legends awoke. Heroes forged their tales, each victory etching myth into history itself. Now the stage lies quiet yet waiting, daring the next to rise and carve their name among the immortals." },
+    13: { title: "LA Fest 2008 • ", desc: "The old hall’s lights fade, it’s cheers now nothing more than echoes in the air. Yet, with every ending, a new beginning awakens. A new arena rises, its walls set to tremble with the clash of battles and the roar of glory. The story continues. Will you write your part?" },
+    12: { title: "LA Fest 2007 • ", desc: "Step forth as the master artisan. With bold strokes, carve your vision into the canvas of existence. Let your actions define the contours of tomorrow, and let the world bear witness to your magnificent creation." },
+    11: { title: "LA Fest 2006 • ", desc: "Through the prism of a single lens, the world refracts into a spectrum of possibility. Hold steady, and capture the light, for in this moment, you are the axis of all that is yet to unfold." },
+    10: { title: "LA Fest 2005 • ", desc: "What began as a collective dream evolved into a vibrant force, reshaping the city’s creative landscape. Driven by the passion of its innovators, it stands unwavering, crowned by determination. Now, it awakens once more, ready to unfold, filled with the possibilities of what is yet to come?" },
+    9:  { title: "LA Fest 2004 • ", desc: "Imagine beyond horizons. Shatter the limits. Leave the familiar behind and carve your name among the stars. Step into the endless flow, where every moment leaves an indelible mark, and every dream shapes the universe." },
+    8:  { title: "LA Fest 2003 • ", desc: "Where aptitudes soar and hearts string together. Reminisce what was carved into one's very soul and witness it rise, evolving into a power that echoes through the ages, leaving an indelible mark on everything it touches." },
+    7:  { title: "LA Fest 2002 • ", desc: "Harness the energy of a new generation. Reach beyond the ephemeral and claim the boundless. Embrace the unknown, and let every ambition spark the fire that changes the narrative and reshapes tomorrow." },
+    6:  { title: "LA Fest 2001 • ", desc: "When a dream met a purpose, unity took root in undaunted passion. Through motive, resolve, and spirit, the unforgettable was shaped. From the city's heart, a fest arose, etched by defiant hope. Thus the tale advances, endlessly fuelled by the fire of creation." },
+    5:  { title: "LA Fest 2000 • ", desc: "The century turned, and with it came a shift that would forever change its course, inviting the bold to break conventions and redefine norms. Step into this new chapter, where creativity knows no bounds and every idea has a chance to shine." },
+    4:  { title: "LA Fest 1999 • ", desc: "Pulse wild. Burn bright. Set the measure—and let it shatter. Tame the storm and let your echoes carve the infinite, where every beat marks a beginning and every spark leaves a scar on the sky. Rise, and let your moments ripple through the tides of time, forging a bequest that never fades." },
+    3:  { title: "LA Fest 1998 • ", desc: "The stage expanded. The voices multiplied. LA Fest grew with the rhythm of the city, embracing more talents, more dreams, and more stars who dared to shine." },
+    2:  { title: "LA Fest 1997 • ", desc: "The first notes echoed. The first steps touched the ground. LA Fest lit its first flame, casting a golden glow that promised a future of creativity and expression. The journey had begun." },
+    1:  { title: "LA Fest 1996 • ", desc: "What began as a spark in the hearts of a few ignited a tradition. A dream of a stage where talents could shine, voices could rise, and the youth could find the arc of brilliance. Together, we carve every moment into history." }
+};
+
+
+        // add descriptions below to desc in yearData.
+
+        // "2000: The century turned, and with it came a shift that would forever change its course, inviting the bold to break conventions and redefine norms. Step into this new chapter, where creativity knows no bounds and every idea has a chance to shine.",
+        //     "2001: When a dream met a purpose, unity took root in undaunted passion. Through motive, resolve, and spirit, the unforgettable was shaped. From the city's heart, a fest arose, etched by defiant hope. Thus the tale advances, endlessly fuelled by the fire of creation.",
+        //     "2002: Harness the energy of a new generation. Reach beyond the ephemeral and claim the boundless. Embrace the unknown, and let every ambition spark the fire that changes the narrative and reshapes tomorrow.",
+        //     "2003: Where aptitudes soar and hearts string together. Reminisce what was carved into one's very soul and witness it rise, evolving into a power that echoes through the ages, leaving an indelible mark on everything it touches.",
+        //     "2004: Imagine beyond horizons. Shatter the limits. Leave the familiar behind and carve your name among the stars. Step into the endless flow, where every moment leaves an indelible mark, and every dream shapes the universe.",
+        //     "2005: What began as a collective dream evolved into a vibrant force, reshaping the city’s creative landscape. Driven by the passion of its innovators, it stands unwavering, crowned by determination. Now, it awakens once more, ready to unfold, filled with the possibilities of what is yet to come?",
+        //     "2006: Awaken and unleash the unthinkable. Unbind, untie, and unravel the perpetual. Let every second burst with potential and make every trial a conquest.  In this boundless realm, we make no compromises.",
+        //     "2007: Echoed with tribute and triumph, a spirit forever ignites the fest’s soul. Every shared breath, every spark of excellence, lives on in memory. Now we carry that fire forward to fresh challenges, new dreams waiting to unfold. The next chapter begins with you. Will you join us and light the way?",
+        //     "2008:The old hall’s lights fade, it’s cheers now nothing more than echoes in the air. Yet, with every ending, a new beginning awakens. A new arena rises, its walls set to tremble with the clash of battles and the roar of glory. The story continues. Will you write your part?",
+        //     "2009:When the Indoor Stadium's arches first embraced ambition, legends awoke. Heroes forged their tales, each victory etching myth into history itself. Now the stage lies quiet yet waiting, daring the next to rise and carve their name among the immortals.",
+        //     "2010: Relive the day. Relive the art. Relive awesomeness. Relive the art of waging wars on stage. Relive LA Fest 2010, where there was life in every art.",
+        //     "2011: 16 years down the line, the legacy continues… LA Fest the first ever inter-school fest still holds an enviable position even in the face of present day stiff competition.",
+        //     "2012: An idea to create something new… Something that would change the face of humanity in Trivandrum… An idea to bring Life and Arts together in an ethereal melting pot of talent…",
+        //     "2013: The meticulous craftsmanship of 17 long years. A fusillade of sheer ingenuity that tugs at your heartstrings and astounds with its aesthetic appeal. We provide the plot. Unravel your story in our theatre of dreams.",
+        //     "2014: Empires aren't built in a day but legacy is made in one. A legacy of 18 has come to pass. Now the stars are realigning. Be a part of the supernova.",
+        //     "2015: As the heavens stand still and the gates to Arcadia open… Experience the twentieth chapter of the eternal saga which celebrates the art of life.",
+        //     "2016: The prophecy written by the ancients two decades ago has come to pass. The wheels of the celestial machinery have ever since been spinning… churning out champions. It is time to inscribe your name in the hall of legends.",
+        //     "2017: The LA Fest that never got the chance to show itself, but still was the source of inspiration for many a loyolite of the batch of 2018 and beyond. Their efforts did not go unseen…",
+        //     "1997: At the heart of LA Fest, the Nataraja dances—a flame where time and art entwine. Trophies fade into fable, and each leap is a stilled story. Yet the rhythm calls, and dreamers rise, drawn to shape their fate. Will you answer the call of this endless dance?",
+        //     "1998: Envision, dare, and revere beyond the limits. Transcend the familiar, and shape what is destined to shine among the stars. Step into the endless flow, where every instant becomes a mark of greatness and where every fantasy shapes the cosmos.",
+        //     "1999: Pulse wild. Burn bright. Set the measure—and let it shatter. Tame the storm and let your echoes carve the infinite, where every beat marks a beginning and every spark leaves a scar on the sky. Rise, and let your moments ripple through the tides of time, forging a bequest that never fades.",
+        //     "1996: What began as a spark in the hearts of a few ignited a tradition. A dream of a stage where talents could shine, voices could rise, and the youth could find the arc of brilliance. Together, we carve every moment into history.",
+        //     "2022 : The Colosseum reopens after an interlude of VI years. Here the fight isn’t over till only the winner stands. New heroes will rise as the giants fall, who will guide their legions to ultimate glory?",
+        //     "2023 : The Matrix has awakened and calls for the valiant. Immortalise your art with ardour. The quest for glory awaits you. Behold, the 23rd iteration of Life and Arts.",
+        //     "2024: The wheels of tradition turn once more. Etch your name in our legacy, for in this utopia, your flaws are your weapons. Glory be to life. Glory be to arts. Triumph awaits its encore.",
+        //  "The monochrome cassette whirs to life in vibrant neon hues, drawing you into a new iteration. Its radiance spills forth, illuminating the tales etched across the walls of time. As echoes of the past emerge from this light, carve your mark into eternity. Celebrate the Silver Jubilee of An Odyssey Relived and A Legacy Revered in the timeless realm of Life and Arts."
+
+
+        /* ---------------- PATH (UNCHANGED) ---------------- */
+        function path(i) {
+
+            const blockSize = 5;
+            const block = Math.floor(i / blockSize);
+            const local = i % blockSize;
+
+            const spacing = 75;
+            const z = -i * spacing;
+
+            const t = local / blockSize * Math.PI * 2;
+
+            let x = 0, y = 0;
+
+            if (block === 0) {
+                x = Math.cos(t) * 18;
+                y = Math.sin(t) * 10;
+            }
+
+            if (block === 1) {
+                x = 25 + Math.cos(t) * 22;
+                y = local * 6;
+            }
+
+            if (block === 2) {
+                x = -28 + Math.sin(t) * 20;
+                y = -local * 5;
+            }
+
+            if (block === 3) {
+                x = local * 10;
+                y = Math.sin(t) * 18;
+            }
+
+            if (block >= 4) {
+                x = Math.cos(t) * 30;
+                y = Math.sin(t) * 22;
+            }
+
+            return new THREE.Vector3(x, y, z);
+        }
+
+        /* ---------------- LOGOS (UNCHANGED) ---------------- */
+        const nodes = [];
+        const loader = new THREE.TextureLoader();
+
+        function fallback(n) {
+            const c = document.createElement("canvas");
+            c.width = 512; c.height = 512;
+            const ctx = c.getContext("2d");
+
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, 512, 512);
+
+            ctx.strokeStyle = "#d4af37";
+            ctx.lineWidth = 10;
+            ctx.strokeRect(10, 10, 492, 492);
+
+            ctx.fillStyle = "#000";
+            ctx.font = "bold 90px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(n, 256, 260);
+
+            return new THREE.CanvasTexture(c);
+        }
+
+        function make(item, i) {
+
+            const geo = new THREE.PlaneGeometry(14, 14);
+            const mesh = new THREE.Mesh(geo);
+
+            mesh.userData = { index: item.index };
+
+            const imgIndex = item.index;
+
+            loader.load(
+                `logo/${imgIndex}.png`,
+                (tex) => {
+                    tex.colorSpace = THREE.SRGBColorSpace;
+
+                    mesh.material = new THREE.MeshBasicMaterial({
+                        map: tex,
+                        transparent: true
+                    });
+                },
+                undefined,
+                () => {
+                    mesh.material = new THREE.MeshBasicMaterial({
+                        map: fallback(imgIndex),
+                        transparent: true
+                    });
+                }
+            );
+
+            scene.add(mesh);
+            nodes.push(mesh);
+        }
+
+        items.forEach((it, i) => make(it, i));
+
+        /* ---------------- SCROLL ---------------- */
+        let target = 0;
+        let current = 0;
+
+        // Auto‑scroll on load
+        let autoScroll = true;
+        let autoScrollProgress = 0;
+        const autoScrollTotal = 2000;
+        let autoScrollPaused = false;
+
+        window.addEventListener("wheel", (e) => {
+            userInteracted = true;
+            target += e.deltaY * 0.0018;
+            target = Math.max(0, Math.min(target, items.length - 1));
+        });
+
+        // ---------------- SCROLL (wheel + touch) ----------------
+        let startY = 0;
+        let isDragging = false;
+
+        // TOUCH scroll
+        window.addEventListener("touchstart", (e) => {
+            if (e.touches.length !== 1) return;
+            startY = e.touches[0].clientY;
+            isDragging = true;
+        });
+
+        window.addEventListener("touchmove", (e) => {
+            userInteracted = true;
+            if (!isDragging) return;
+            e.preventDefault(); // prevents page scroll, keeps control in 3D timeline
+
+            const y = e.touches[0].clientY;
+            const delta = startY - y;
+            startY = y;
+
+            target += delta * 0.022; // tune sensitivity
+            target = Math.max(0, Math.min(target, items.length - 1));
+        }, { passive: false });
+
+        window.addEventListener("touchend", () => {
+            isDragging = false;
+        });
+
+        /* ---------------- CAMERA ---------------- */
+        let rotX = 0, rotY = 0;
+        let tX = 0, tY = 0;
+
+        window.addEventListener("mousemove", (e) => {
+            tY = (e.clientX / innerWidth - 0.5) * 1.2;
+            tX = (e.clientY / innerHeight - 0.5) * 0.8;
+        });
+
+        /* ---------------- CLICK ---------------- */
+        const ray = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener("click", (e) => {
+
+            mouse.x = (e.clientX / innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+
+            ray.setFromCamera(mouse, camera);
+
+            const hit = ray.intersectObjects(nodes, true);
+
+            if (hit.length) {
+                openModal(hit[0].object.userData.index);
+            }
+        });
+
+        /* ---------------- MODAL ---------------- */
+        function openModal(idx) {
+
+            const data = yearData[idx] || {
+                title: `LA Fest Entry ${idx}`,
+                desc: `Archival festival memory for timeline slot ${idx}.`
+            };
+
+            document.getElementById("modal").style.display = "flex";
+            setTimeout(() => document.getElementById("modal").style.opacity = 1, 10);
+
+            // document.getElementById("mYear").innerText = ` LA FEST ${idx}`;
+            document.getElementById("mTitle").innerText = data.title;
+            document.getElementById("mDesc").innerText = data.desc;
+                // ┌────────────────────────────────────────────┐
+                // │ PAUSE AUTO‑SCROLL WHILE MODAL IS OPEN    │
+                // └────────────────────────────────────────────┘
+            autoScrollPaused = true;
+        }
+
+        function closeModal() {
+            document.getElementById("modal").style.opacity = 0;
+            setTimeout(() => document.getElementById("modal").style.display = "none", 300);
+            autoScrollPaused = false;
+        }
+
+        /* ---------------- ANIMATION (STAR FIX INCLUDED ONLY HERE) ---------------- */
+        let userInteracted = false;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Auto‑scroll only if not stopped by user
+            if (autoScroll && !userInteracted && !autoScrollPaused) {
+                autoScrollProgress++;
+                if (autoScrollProgress <= autoScrollTotal) {
+                    target = (items.length - 1) * (autoScrollProgress / autoScrollTotal);
+                } else {
+                    autoScroll = false;
+                }
+            }
+
+
+            current += (target - current) * 0.05;
+
+            const i = Math.floor(current);
+            const f = current - i;
+
+            const a = path(i);
+            const b = path(i + 1);
+
+            const pos = new THREE.Vector3().lerpVectors(a, b, f);
+
+            /* 🔥 FIX: STARFIELD NOW FOLLOWS CAMERA PROPERLY */
+            stars.position.copy(camera.position);
+            stars.position.multiplyScalar(0.05);
+
+            nodes.forEach((n, idx) => {
+                const p = path(idx);
+                n.position.copy(p);
+                n.lookAt(camera.position);
+            });
+
+            rotX += (tX - rotX) * 0.05;
+            rotY += (tY - rotY) * 0.05;
+
+            camera.position.x = pos.x + Math.sin(rotY) * 10;
+            camera.position.y = pos.y + Math.sin(rotX) * 8 + 12;
+            camera.position.z = pos.z + 60 + Math.cos(rotY) * 10;
+
+            camera.lookAt(pos.x, pos.y, pos.z);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        /* ---------------- RESIZE ---------------- */
+        window.addEventListener("resize", () => {
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+        });
+
+    </script>
+
+        <script>
+        const nav = document.getElementById("navContainer");
+    const toggle = document.getElementById("navToggle");
+
+// Toggle on click (good for mobile)
+toggle.addEventListener("click", () => {
+  nav.classList.toggle("active");
+});
+
+// Optional: hover support for desktop
+nav.addEventListener("mouseenter", () => {
+  nav.classList.add("active");
+});
+
+nav.addEventListener("mouseleave", () => {
+  nav.classList.remove("active");
+});
+    </script>
+
+</body>
+
+</html>

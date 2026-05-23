@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LA 2K26.</title>
+<link rel="icon" type="image/png" href="lafestlogofavicon.png" sizes="34x34"/>
+
+<style>
+    *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+    * { margin: 0; padding: 0; outline: none !important; box-sizing: border-box; }
+    html, body, #root { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    canvas { display: block; outline: none !important; }
+    #canvas { position: absolute; top: 0; left: 0; }
+
+@font-face {
+  font-family: "BEASIGNE";
+  src: url(BEASIGNE.otf) format(opentype);
+}
+
+
+
+body {
+  font-family: "BEASIGNE";
+  margin: 0;
+  overflow: hidden;
+  background: #050505;
+  cursor: default;
+}
+
+
+/* canvas (Three.js) on top */
+canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none; /* important so mouse still affects grid */
+}
+
+
+
+/* MAIN GRID */
+.grid{
+      position: absolute;
+  inset: 0;
+  z-index: 0;
+    /* position:relative; */
+    width:100vw;
+    height:100vh;
+    display:grid;
+    /* change density here */
+    grid-template-columns:repeat(32, 1fr);
+    grid-template-rows:repeat(18, 1fr);
+}
+
+.cell{
+    position:relative;
+
+    border-right:1px solid rgba(255,255,255,0.05);
+    border-bottom:1px solid rgba(255,255,255,0.05);
+
+    transition:
+        border-color .08s linear,
+        box-shadow .08s linear,
+        background .08s linear;
+}
+
+/* ACTIVE GLOW */
+.cell.active{
+    border-color:rgba(64, 224, 255,0.95);
+
+    box-shadow:
+        inset 0 0 12px rgba(64, 224, 255,0.25),
+        0 0 10px rgba(64, 224, 255,0.4),
+        0 0 25px rgba(64, 224, 255,0.25);
+
+    z-index:2;
+}
+
+/* stronger center */
+.cell.core{
+    border-color:#40e0ff;
+
+    background:rgba(64, 224, 255,0.08);
+
+    box-shadow:
+        inset 0 0 25px rgba(64, 224, 255,0.35),
+        0 0 15px rgba(64, 224, 255,0.8),
+        0 0 40px rgba(64, 224, 255,0.45);
+}
+
+/* blue cursor point */
+.cursor-dot{
+    position:fixed;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#a6e7ff;
+
+    box-shadow:
+        0 0 10px #8ddfff,
+        0 0 30px #8ddfff,
+        0 0 60px #8ddfff;
+
+    pointer-events:none;
+    transform:translate(-50%, -50%);
+    z-index:9999;
+}
+
+/* cinematic dark edges */
+.vignette{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+
+    background:
+        radial-gradient(circle at center,
+        transparent 45%,
+        rgba(0,0,0,.55) 100%);
+}
+
+
+.site-content.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* nav */
+/* NAV BASE */
+.nav-left,
+.nav-right {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: all 0.4s ease;
+  z-index: 10;
+}
+
+.nav-left {
+  left: 60px;
+  transform: translateY(-50%) translateX(-20px);
+}
+
+.nav-right {
+  right: 60px;
+  transform: translateY(-50%) translateX(20px);
+}
+
+/* ACTIVE STATE */
+.nav-left.active,
+.nav-right.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* LINKS */
+.nav-left a,
+.nav-right a {
+  color: white;
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.nav-left a:hover,
+.nav-right a:hover {
+  opacity: 1;
+  color: #1d5ead;
+  text-shadow: 0 0 10px #1d5ead;
+  transform: translateY(-2px);
+  transition: all 0.2s;
+}
+
+/* NAV ARROWS */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  opacity: 1;
+  transition: opacity 0.4s ease, transform 0.3s ease;
+  z-index: 9;
+}
+
+.nav-arrow.left {
+  left: 20px;
+}
+
+.nav-arrow.right {
+  right: 20px;
+}
+
+.nav-arrow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 10px solid transparent;
+}
+
+.nav-arrow.left::before {
+  border-right-color: #fff;
+}
+
+.nav-arrow.right::before {
+  border-left-color: #fff;
+}
+
+.nav-arrow.hidden {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.8);
+}
+
+</style>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.183.2/build/three.module.js",
+      "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.183.2/build/three.webgpu.js",
+      "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.183.2/build/three.tsl.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.2/examples/jsm/"
+    }
+  }
+  </script>
+
+</head>
+
+<body>
+<div id="loadingScreen">
+  <video id="loadingVideo" autoplay muted playsinline preload="auto" src="logofirst6secs.mp4"></video>
+</div>
+<div id="siteContent" class="site-content">
+  <div id="root"></div>
+  <script type="module" src="script.js"></script>
+
+</div>
+
+
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { TextureLoader } from 'three';
+
+// ---------------- SCENE ----------------
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  40,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+const loadingScreen = document.getElementById('loadingScreen');
+const loadingVideo = document.getElementById('loadingVideo');
+const siteContent = document.getElementById('siteContent');
+let helmetReady = false;
+let videoEnded = false;
+
+function showSite() {
+  siteContent?.classList.add('visible');
+}
+
+function hideLoadingScreen() {
+  if (!loadingScreen || loadingScreen.classList.contains('hide')) return;
+  loadingScreen.classList.add('hide');
+  showSite();
+  setTimeout(() => loadingScreen?.remove(), 800);
+}
+
+function tryHideLoadingScreen() {
+  if (helmetReady && videoEnded) {
+    hideLoadingScreen();
+  }
+}
+
+if (loadingVideo) {
+  loadingVideo.addEventListener('ended', () => {
+    videoEnded = true;
+    tryHideLoadingScreen();
+  }, { once: true });
+
+  loadingVideo.play().catch(() => {});
+}
+
+setTimeout(() => {
+  if (loadingScreen && !loadingScreen.classList.contains('hide')) {
+    hideLoadingScreen();
+  }
+}, 10000);
+
+camera.position.set(0, 0.2, 4);
+
+
+// ---------------- RENDERER ----------------
+// const renderer = new THREE.WebGLRenderer({
+//   antialias: true
+// });
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true   // IMPORTANT
+});
+
+scene.background = null;
+// scene.fog = new THREE.Fog(0x050505, 3, 8);
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+// IMPORTANT: keep exposure LOW but not extreme
+renderer.toneMappingExposure = 0.4;
+
+siteContent?.appendChild(renderer.domElement);
+
+
+// ---------------- LIGHTING (simple & safe) ----------------
+
+// soft base light (prevents black crush)
+scene.add(new THREE.AmbientLight(0x000000, 0.15));
+
+// main light (front top)
+const light = new THREE.DirectionalLight(0x0000ff, 1.5);
+light.position.set(3, 5, 3);
+scene.add(light);
+
+// subtle side fill
+const fill = new THREE.DirectionalLight(0x000000, 0.6);
+fill.position.set(-3, 2, 2);
+scene.add(fill);
+
+    
+// ---------------- MODEL ----------------
+const loader = new GLTFLoader();
+
+let helmet;
+
+loader.load('./helmet.glb', (gltf) => {
+  helmet = gltf.scene;
+  helmet.scale.set(1.2, 1.2, 1.2);
+  scene.add(helmet);
+  helmetReady = true;
+  tryHideLoadingScreen();
+});
+
+
+
+
+// ---------------- MOUSE CONTROL ----------------
+let mx = 0, my = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mx = (e.clientX / window.innerWidth - 0.5);
+  my = (e.clientY / window.innerHeight - 0.5);
+});
+
+
+// SCREEN SIDE HOVER FOR NAV
+document.addEventListener("mousemove", (event) => {
+
+  const mouseX = event.clientX;
+  const width = window.innerWidth;
+
+  if (mouseX < width * 0.4) {
+    hoverLeft = true;
+    hoverRight = false;
+    // cancel hide timers
+    clearTimeout(hideTimerLeft);
+    clearTimeout(hideTimerRight);
+  } else if (mouseX > width * 0.6) {
+    hoverRight = true;
+    hoverLeft = false;
+    // cancel hide timers
+    clearTimeout(hideTimerLeft);
+    clearTimeout(hideTimerRight);
+  } else {
+    // center, start hide timers
+    clearTimeout(hideTimerLeft);
+    clearTimeout(hideTimerRight);
+    hideTimerLeft = setTimeout(() => {
+      if (!focusLeft && !lockedLeft) {
+        hoverLeft = false;
+        updateNav();
+      }
+    }, 500);
+    hideTimerRight = setTimeout(() => {
+      if (!focusRight && !lockedRight) {
+        hoverRight = false;
+        updateNav();
+      }
+    }, 500);
+  }
+
+  updateNav();
+
+});
+
+const navLeft = document.getElementById("navLeft");
+const navRight = document.getElementById("navRight");
+const arrowLeft = document.querySelector('.nav-arrow.left');
+const arrowRight = document.querySelector('.nav-arrow.right');
+
+let hoverLeft = false;
+let hoverRight = false;
+
+let focusLeft = false;
+let focusRight = false;
+
+let lockedLeft = false;
+let lockedRight = false;
+
+let hideTimerLeft;
+let hideTimerRight;
+function updateNav() {
+
+  const leftActive =
+    hoverLeft || focusLeft || lockedLeft;
+
+  const rightActive =
+    hoverRight || focusRight || lockedRight;
+
+  navLeft.classList.toggle("active", leftActive);
+  navRight.classList.toggle("active", rightActive);
+
+  arrowLeft.classList.toggle('hidden', leftActive);
+  arrowRight.classList.toggle('hidden', rightActive);
+}
+function checkHelmetHover() {
+  if (!helmet) return;
+
+  // Flatten all meshes inside helmet for raycasting
+  const meshes = [];
+  helmet.traverse((child) => {
+    if (child.isMesh) meshes.push(child);
+  });
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(meshes, true);
+
+  if (intersects.length > 0) {
+    const point = intersects[0].point; // Intersection point in world space
+
+    // Determine side: relative to helmet center
+    const helmetPos = helmet.position;
+
+    state.hoverLeft = point.x < helmetPos.x;
+    state.hoverRight = point.x >= helmetPos.x;
+
+    updateNav();
+  } else {
+    // Optionally, start 2s timer to hide nav if not hovering nav itself
+    startNavHideTimers();
+  }
+}
+navLeft.addEventListener("mouseenter", () => {
+  focusLeft = true;
+  updateNav();
+});
+
+navLeft.addEventListener("mouseleave", () => {
+  focusLeft = false;
+  updateNav();
+});
+
+navRight.addEventListener("mouseenter", () => {
+  focusRight = true;
+  updateNav();
+});
+
+navRight.addEventListener("mouseleave", () => {
+  focusRight = false;
+  updateNav();
+});
+navLeft.addEventListener("click", (e) => {
+  e.stopPropagation();
+  lockedLeft = true;
+  updateNav();
+});
+
+navRight.addEventListener("click", (e) => {
+  e.stopPropagation();
+  lockedRight = true;
+  updateNav();
+});
+
+document.addEventListener("click", (e) => {
+
+  if (!navLeft.contains(e.target) &&
+      !navRight.contains(e.target)) {
+
+    lockedLeft = false;
+    lockedRight = false;
+
+    updateNav();
+  }
+});
+
+
+
+// ---------------- LOOP ----------------
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (helmet) {
+    helmet.rotation.y += (mx * 0.5 - helmet.rotation.y) * 0.06;
+    helmet.rotation.x += (my * 0.2 - helmet.rotation.x) * 0.06;
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+
+// ---------------- RESIZE ----------------
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+
+<script>
+const grid = document.getElementById('grid');
+const dot = document.getElementById('dot');
+
+const cols = 32;
+const rows = 18;
+const total = cols * rows;
+
+const cells = [];
+
+/* CREATE GRID */
+for(let i=0;i<total;i++){
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    grid.appendChild(cell);
+    cells.push(cell);
+}
+
+let mouseX = window.innerWidth/2;
+let mouseY = window.innerHeight/2;
+
+document.addEventListener('mousemove',(e)=>{
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+
+    updateGlow();
+});
+
+function updateGlow(){
+
+    const cellWidth = window.innerWidth / cols;
+    const cellHeight = window.innerHeight / rows;
+
+    const centerCol = Math.floor(mouseX / cellWidth);
+    const centerRow = Math.floor(mouseY / cellHeight);
+
+    cells.forEach((cell,index)=>{
+
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+
+    const dx = col - centerCol;
+    const dy = row - centerRow;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    const radius = 6;
+
+    let intensity = Math.max(0, 1 - (dist / radius));
+
+    intensity = Math.pow(intensity, 1.8);
+
+    /* BASE GRID VISIBILITY */
+    const baseAlpha = 0.05;
+
+    /* GLOW VALUES */
+    const borderAlpha = baseAlpha + (intensity * 0.5);
+    const glowAlpha = intensity * 0.22;
+
+    cell.style.borderColor =
+        `rgba(64,224,255,${borderAlpha})`;
+
+    cell.style.boxShadow = `
+        inset 0 0 ${10 * intensity}px rgba(64,224,255,${glowAlpha}),
+        0 0 ${30 * intensity}px rgba(64,224,255,${glowAlpha})
+    `;
+
+    cell.style.background =
+        `rgba(64,224,255,${intensity * 0.035})`;
+
+});
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1232 @@
+@import url("https://fonts.cdnfonts.com/css/ica-rubrik-black");
+@import url("https://fonts.cdnfonts.com/css/poppins");
+
+@font-face {
+    font-family: "BEASIGNE";
+    src: url("BEASIGNE.otf");
+}
+
+@font-face {
+    font-family: "Panchang";
+    src: url("Panchang-Light.woff2");
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+.banner {
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.banner .slider {
+    position: absolute;
+    width: 200px;
+    height: 250px;
+    top: 12%;
+    left: calc(50% - 100px);
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+    animation: autoRun 20s linear infinite;
+    z-index: 2;
+}
+
+@keyframes autoRun {
+    from {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(0deg);
+    }
+
+    to {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(360deg);
+    }
+}
+
+/* .banner .slider .item {
+    position: absolute;
+    inset: 0 0 0 0;
+    transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(450px);
+} */
+
+.banner .slider .item {
+    position: absolute;
+    inset: 0;
+
+    transform-style: preserve-3d;
+
+    transform:
+        rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+        translateZ(450px);
+}
+
+.banner .slider .item img {
+    width: 100%;
+    /* height: 120%; */
+    object-fit: cover;
+    aspect-ratio: 3 / 4;
+    object-position: top;
+}
+
+.banner .content {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1400px, 100vw);
+    height: max-content;
+    padding-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+.banner .content h1 {
+    display:none;
+    font-family: "BEASIGNE";
+    font-size: 10em;
+    line-height: 1em;
+    position: relative;
+    background-image:
+        linear-gradient(to bottom,
+            hsl(239, 70%, 10%) 5%,
+            hsl(235, 89%, 40%) 50%,
+            hsl(236, 84%, 20%) 80%),
+        linear-gradient(to bottom, #6f7cff, #040F7B, #02074a);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+
+    text-shadow:
+        0 0 3px rgba(111, 124, 255, 0.5),
+        0 0 6px rgba(44, 59, 243, 0.4),
+        0 0 10px rgba(15, 25, 175, 0.3);
+
+    filter: contrast(1.1) brightness(1.1);
+}
+
+.banner .content h1::before {
+    content: "LA FEST";
+    position: absolute;
+    top: 0;
+    /* left: 0; */
+
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.5),
+            rgba(255, 255, 255, 0.1),
+            transparent);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    transform: translateY(-1px);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.banner .content h1::after {
+    position: absolute;
+    inset: 0 0 0 0;
+    content: attr(data-content);
+    z-index: 2;
+    -webkit-text-stroke: 2px #d2d2d2;
+    color: transparent;
+}
+
+.banner .content .author {
+    font-family: Poppins;
+    text-align: right;
+    max-width: 200px;
+}
+
+.banner .content h2 {
+    font-size: 3em;
+}
+
+@media screen and (max-width: 1023px) {
+    .banner .slider {
+        width: 160px;
+        height: 200px;
+        left: calc(50% - 80px);
+    }
+
+    .banner .slider .item {
+        transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(300px);
+    }
+
+    .banner .content h1 {
+        display: block;
+        text-align: center;
+        width: 100%;
+        text-shadow: 0 10px 20px #000;
+        font-size: 7em;
+    }
+
+    .banner .content .author {
+        color: #fff;
+        padding: 20px;
+        text-shadow: 0 10px 20px #000;
+        z-index: 2;
+        max-width: unset;
+        width: 100%;
+        text-align: center;
+        padding: 0 30px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .banner .slider {
+        width: 100px;
+        height: 150px;
+        left: calc(50% - 50px);
+    }
+
+    .banner .slider .item {
+        transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(180px);
+    }
+
+    .banner .content h1 {
+        font-size: 5em;
+    }
+}
+
+#modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.315);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+}
+
+/* ccccccc */
+
+.modal-content {
+    position: relative;
+    width: clamp(60vw, 90vw, 1200px);
+    /* max-width:1200px; */
+    /* min-width:60vw; */
+    height: 90vh;
+    background: #0a0a12ea;
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 0 40px cyan;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    padding: 50px;
+}
+
+/* LEFT SIDE */
+.left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* background: rgb(5, 19, 41); */
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-right: 2px solid cyan;
+    padding-right: 30px;
+    overflow: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.left::-webkit-scrollbar {
+    display: none;
+}
+
+.left img {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    /* width: 70%; */
+    height: 70%;
+    aspect-ratio: 3 / 4;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.left h2 {
+    font-family: "BEASIGNE";
+    color: cyan;
+    margin-bottom: 10px;
+}
+
+.left p {
+    font-family: "Panchang";
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: justify;
+}
+
+/* RIGHT SIDE */
+.right {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 15px;
+    padding-left: 30px;
+    overflow: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.right::-webkit-scrollbar {
+    display: none;
+}
+
+.right h3 {
+    font-family: "BEASIGNE";
+    margin-bottom: 10px;
+    color: cyan;
+    font-size: 1.2em;
+    text-align: left;
+}
+
+.right ul {
+    list-style: none;
+    padding: 0;
+}
+
+.right li {
+    font-family: "Panchang";
+    margin-bottom: 18px;
+    font-size: 1em;
+    border-left: 2px solid cyan;
+    padding-left: 8px;
+    font-weight: 10;
+}
+
+/* arrows */
+#prevBtn,
+#nextBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: cyan;
+    cursor: pointer;
+}
+
+#prevBtn {
+    left: -50px;
+}
+
+#nextBtn {
+    right: -50px;
+}
+
+#closeBtn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 10000;
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+/* ------------ */
+#modal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+#modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    transform: scale(0.9) translateY(30px);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+#modal.show .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-body {
+    transition:
+        transform 0.4s ease,
+        opacity 0.4s ease;
+}
+
+.slide-out-left {
+    transform: translateX(-50px);
+    opacity: 0;
+}
+
+.slide-out-right {
+    transform: translateX(50px);
+    opacity: 0;
+}
+
+.slide-in {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+#prevBtn:hover,
+#nextBtn:hover {
+    text-shadow: 0 0 10px cyan;
+    transform: translateY(-50%) scale(1.2);
+    cursor: pointer;
+}
+
+#closeBtn:hover {
+    color: red;
+    transform: scale(1.2) rotate(90deg);
+}
+
+.left img {
+    transition: transform 0.4s ease;
+}
+
+.left img:hover {
+    transform: scale(1.03);
+}
+
+/* mobile toggle text */
+.mobile-toggle-text {
+    display: none;
+    color: cyan;
+    font-family: "Panchang";
+    font-size: 14px;
+    margin-top: 15px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: underline;
+    background: #0a0a12f2;
+    padding: 15px;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    box-shadow: 0 -10px 20px #0a0a12;
+}
+
+.mobile-toggle-text:hover {
+    text-shadow: 0 0 10px cyan;
+}
+
+#backToDescBtn {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: left;
+    top: 0;
+    bottom: auto;
+    box-shadow: 0 10px 20px #0a0a12;
+}
+
+/* restore default cursor */
+body {
+    cursor: default;
+}
+
+.verycooltext {
+    font-family: "BEASIGNE";
+}
+
+/* ===== MOBILE FIX FOR MODAL ===== */
+@media (max-width: 768px) {
+
+    .modal-content {
+        height: 90vh;
+        /* more breathing room */
+        padding: 10px;
+    }
+
+    .modal-body {
+        flex-direction: column;
+        /* 🔥 THIS stacks left + right */
+        padding: 15px;
+        gap: 15px;
+    }
+
+    /* LEFT */
+    .left {
+        border-right: none;
+        /* remove side border */
+        border-bottom: 2px solid cyan;
+        /* add bottom divider instead */
+        padding-right: 0;
+        padding-bottom: 15px;
+    }
+
+    .left img {
+        width: 100%;
+        height: auto;
+        /* prevent overflow */
+    }
+
+    /* RIGHT */
+    .right {
+        width: 100%;
+        padding: 0;
+        flex: 1;
+    }
+
+    .mobile-toggle-text {
+        display: block;
+    }
+
+    .modal-body:not(.show-rules) .right {
+        display: none;
+    }
+
+    .modal-body.show-rules .left {
+        display: none;
+    }
+
+    /* arrows inside modal on mobile */
+    #prevBtn {
+        left: 10px;
+    }
+
+    #nextBtn {
+        right: 10px;
+    }
+}
+
+/* CENTER BANNER */
+.center-banner {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+
+    transform: translate(-50%, -50%) translateZ(0px);
+
+    width: 180px;
+    height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+
+    border-radius: 12px;
+
+
+
+    z-index: 5;
+}
+
+.center-banner span {
+    font-family: "BEASIGNE";
+    color: cyan;
+    font-size: 1.5em;
+    text-shadow: 0 0 10px cyan;
+}
+
+.center-banner img {
+    object-fit: scale-down;
+    width: max(100%, 500px);
+}
+
+/* inner wrapper handles animation */
+.banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    animation: floatBounce 3s ease-in-out infinite;
+}
+
+/* subtle floating bounce */
+@keyframes floatBounce {
+
+    0%,
+    100% {
+        transform: translateY(0px) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.03);
+        /* adjust height here */
+    }
+}
+
+.header {
+    background-image: url("images/bg.png");
+}
+
+.neon {
+    color: #8ab4ff;
+
+    text-shadow:
+        0 0 5px #8ab4ff,
+        0 0 10px #8ab4ff,
+        0 0 20px #4d7cff,
+        0 0 40px #4d7cff,
+        0 0 80px #2c3bf3;
+}
+
+@keyframes glitch {
+
+    0%,
+    95%,
+    100% {
+        filter: none;
+    }
+
+    96% {
+        filter: brightness(2) contrast(1.5);
+    }
+
+    97% {
+        filter: brightness(0.3);
+    }
+
+    98% {
+        filter: none;
+    }
+}
+
+
+@keyframes flicker {
+
+    0%,
+    18%,
+    22%,
+    25%,
+    53%,
+    57%,
+    100% {
+        opacity: 1;
+    }
+
+    20%,
+    24%,
+    55% {
+        opacity: 0.4;
+    }
+
+    21%,
+    23%,
+    56% {
+        opacity: 0.1;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .center-banner {
+        top: 60%;
+        width: 550px;
+        /* smaller container 250x120 */
+        height: 520px;
+    }
+
+    .center-banner img {
+        width: 100%;
+        /* scale inside container */
+        max-width: 340px;
+        /* prevent overflow */
+    }
+
+}
+
+
+/* from 810px to 760px */
+@media (max-width: 810px) and (min-width: 760px) {
+    .banner .content h1::before {
+        /* left: 0; */
+        display: none;
+    }
+}
+
+/* from 590px*/
+@media (max-width: 590px) {
+    .banner .content h1::before {
+        /* left: 0; */
+        display: none;
+    }
+}
+
+.glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    background: transparent;
+    animation: static-noise 0.15s steps(8, end) infinite;
+}
+
+
+@keyframes static-noise {
+    0% {
+        background-image:
+            radial-gradient(2px 2px at 20px 30px,
+                rgba(0, 210, 255, 0.22),
+                transparent),
+            radial-gradient(1px 1px at 10px 70px,
+                rgba(0, 170, 255, 0.18),
+                transparent),
+            radial-gradient(2px 2px at 50px 50px,
+                rgba(0, 190, 255, 0.2),
+                transparent),
+            radial-gradient(1px 1px at 80px 10px,
+                rgba(0, 150, 255, 0.16),
+                transparent);
+        background-size: 100px 100px;
+    }
+
+    20% {
+        background-image:
+            radial-gradient(2px 2px at 40px 60px,
+                rgba(0, 210, 255, 0.2),
+                transparent),
+            radial-gradient(1px 1px at 30px 20px,
+                rgba(0, 170, 255, 0.22),
+                transparent),
+            radial-gradient(2px 2px at 70px 80px,
+                rgba(0, 190, 255, 0.18),
+                transparent),
+            radial-gradient(1px 1px at 15px 40px,
+                rgba(0, 150, 255, 0.17),
+                transparent);
+        background-size: 100px 100px;
+    }
+
+    40% {
+        background-image:
+            radial-gradient(2px 2px at 60px 10px,
+                rgba(0, 210, 255, 0.21),
+                transparent),
+            radial-gradient(1px 1px at 5px 50px,
+                rgba(0, 170, 255, 0.19),
+                transparent),
+            radial-gradient(2px 2px at 25px 65px,
+                rgba(0, 190, 255, 0.2),
+                transparent),
+            radial-gradient(1px 1px at 75px 30px,
+                rgba(0, 150, 255, 0.18),
+                transparent);
+        background-size: 100px 100px;
+    }
+
+    60% {
+        background-image:
+            radial-gradient(2px 2px at 15px 75px,
+                rgba(0, 210, 255, 0.19),
+                transparent),
+            radial-gradient(1px 1px at 65px 35px,
+                rgba(0, 170, 255, 0.2),
+                transparent),
+            radial-gradient(2px 2px at 45px 5px,
+                rgba(0, 190, 255, 0.22),
+                transparent),
+            radial-gradient(1px 1px at 85px 55px,
+                rgba(0, 150, 255, 0.16),
+                transparent);
+        background-size: 100px 100px;
+    }
+
+    80% {
+        background-image:
+            radial-gradient(2px 2px at 35px 45px,
+                rgba(0, 210, 255, 0.2),
+                transparent),
+            radial-gradient(1px 1px at 55px 10px,
+                rgba(0, 170, 255, 0.17),
+                transparent),
+            radial-gradient(2px 2px at 10px 30px,
+                rgba(0, 190, 255, 0.21),
+                transparent),
+            radial-gradient(1px 1px at 70px 70px,
+                rgba(0, 150, 255, 0.19),
+                transparent);
+        background-size: 100px 100px;
+    }
+
+    100% {
+        background-image:
+            radial-gradient(2px 2px at 20px 30px,
+                rgba(0, 210, 255, 0.18),
+                transparent),
+            radial-gradient(1px 1px at 10px 70px,
+                rgba(0, 170, 255, 0.16),
+                transparent),
+            radial-gradient(2px 2px at 50px 50px,
+                rgba(0, 190, 255, 0.2),
+                transparent),
+            radial-gradient(1px 1px at 80px 10px,
+                rgba(0, 150, 255, 0.18),
+                transparent);
+        background-size: 100px 100px;
+    }
+}
+
+
+
+
+/* safksdglsjdgns */
+.card {
+    position: relative;
+    width: 200px;
+    height: 280px;
+
+    transform-style: preserve-3d;
+}
+
+/* ================= FRONT ================= */
+.face.front {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(15px);
+}
+
+.face.front img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* border-radius: 14px; */
+}
+
+/* ================= BACK ================= */
+.face.back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg) translateZ(15px);
+}
+
+.face.back img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* border-radius: 14px; */
+    filter: brightness(0.6);
+}
+
+/* ================= LEFT (20px thickness) ================= */
+.face.leftc {
+    position: absolute;
+    width: 30px;
+    height: 280px;
+    top: 0;
+    left: 0;
+
+    /* background: linear-gradient(to left, #111, #222); */
+    background: rgba(0, 0, 0, 0.146);
+    backdrop-filter: blur(40px);
+    transform:
+        rotateY(-90deg)
+        translateZ(15px);
+}
+
+/* ================= RIGHT (20px thickness) ================= */
+.face.rightc {
+    position: absolute;
+    width: 30px;
+    height: 280px;
+    top: 0;
+    right: 0;
+
+    background: linear-gradient(to right, #111, #333);
+
+    transform:
+        rotateY(90deg)
+        translateZ(15px);
+}
+
+.face img {
+    display: block;
+}
+
+
+.face.leftc img,
+.face.rightc img,
+.face.top img,
+.face.bottom img {
+    width: 100%;
+    height: 100% !important;
+
+    object-fit: fill;
+
+    opacity: 0.75;
+    filter: brightness(0.6) blur(5px);
+
+    display: block;
+}
+
+
+/* ================= TOP ================= */
+.face.top {
+    position: absolute;
+    width: 200px;
+    height: 30px;
+    top: 0;
+
+    background: linear-gradient(to top, #0f0f0f, #2a2a2a);
+
+    transform:
+        rotateX(90deg)
+        translateZ(15px);
+}
+
+/* ================= BOTTOM ================= */
+.face.bottom {
+    position: absolute;
+    width: 200px;
+    height: 30px;
+    bottom: 0;
+
+    background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+
+    transform:
+        rotateX(-90deg)
+        translateZ(15px);
+}
+
+.face.front img {
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.5),
+        0 5px 15px rgba(0,0,0,0.3);
+}
+
+.face {
+    backface-visibility: hidden;
+
+    box-shadow:
+        0 0 2px rgba(0,0,0,0.7),
+        inset 0 0 2px rgba(0,0,0,0.5);
+
+    outline: 0.5px solid rgba(0,0,0,0.25);
+}
+
+
+
+
+/* ===================================================== */
+/* ================== LARGE TABLETS ==================== */
+/* ===================================================== */
+
+@media screen and (max-width: 1023px) {
+
+    .banner .slider {
+        width: 100px;
+        height: 220px;
+
+        left: calc(50% - 80px);
+    }
+
+    .banner .slider .item {
+        transform:
+            rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+            translateZ(320px);
+    }
+
+    .card {
+        width: 160px;
+        height: 220px;
+    }
+
+    /* FRONT + BACK */
+    .face.front,
+    .face.back {
+        transform: translateZ(10px);
+    }
+
+    .face.back {
+        transform: rotateY(180deg) translateZ(10px);
+    }
+
+    /* LEFT + RIGHT */
+    .face.leftc,
+    .face.rightc {
+        width: 20px;
+        height: 220px;
+    }
+
+    .face.leftc {
+        transform: rotateY(-90deg) translateZ(10px);
+    }
+
+    .face.rightc {
+        transform: rotateY(90deg) translateZ(10px);
+    }
+
+    /* TOP + BOTTOM */
+    .face.top,
+    .face.bottom {
+        width: 160px;
+        height: 20px;
+    }
+
+    .face.top {
+        transform: rotateX(90deg) translateZ(10px);
+    }
+
+    .face.bottom {
+        transform: rotateX(-90deg) translateZ(10px);
+    }
+
+    .banner .content h1 {
+        font-size: 7em;
+    }
+}
+
+
+/* ===================================================== */
+/* ===================== MOBILE ======================== */
+/* ===================================================== */
+
+@media screen and (max-width: 767px) {
+
+    .banner {
+        overflow: visible;
+    }
+
+    .banner .slider {
+        width: 140px;
+        height: 200px;
+
+        top: 16%;
+
+        left: calc(50% - 55px);
+    }
+
+    .banner .slider .item {
+        transform:
+            rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+            translateZ(230px);
+    }
+
+    .card {
+        width: 140px;
+        height: 200px;
+    }
+
+    /* FRONT + BACK */
+    .face.front {
+        transform: translateZ(8px);
+    }
+
+    .face.back {
+        transform: rotateY(180deg) translateZ(8px);
+    }
+
+    /* LEFT + RIGHT */
+    .face.leftc,
+    .face.rightc {
+        width: 16px;
+        height: 200px;
+    }
+
+    .face.leftc {
+        transform: rotateY(-90deg) translateZ(8px);
+    }
+
+    .face.rightc {
+        transform: rotateY(90deg) translateZ(8px);
+    }
+
+    /* TOP + BOTTOM */
+    .face.top,
+    .face.bottom {
+        width: 110px;
+        height: 16px;
+    }
+
+    .face.top {
+        transform: rotateX(90deg) translateZ(8px);
+    }
+
+    .face.bottom {
+        transform: rotateX(-90deg) translateZ(8px);
+    }
+
+    .banner .content {
+        bottom: 40px;
+    }
+
+    .banner .content h1 {
+        font-size: 4.5em;
+    }
+
+    .banner .content .author {
+        font-size: 12px;
+        padding: 0 20px;
+    }
+
+    .center-banner {
+        top: 72%;
+        width: 300px;
+        height: 200px;
+    }
+
+    .center-banner img {
+        max-width: 240px;
+    }
+}
+
+
+/* ===================================================== */
+/* ================= SMALL PHONES ====================== */
+/* ===================================================== */
+
+@media screen and (max-width: 480px) {
+
+    .banner .slider {
+        width: 90px;
+        height: 130px;
+
+        top: 18%;
+
+        left: calc(50% - 45px);
+    }
+
+    .banner .slider .item {
+        transform:
+            rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+            translateZ(150px);
+    }
+
+    .card {
+        width: 90px;
+        height: 130px;
+    }
+
+    /* FRONT + BACK */
+    .face.front {
+        transform: translateZ(6px);
+    }
+
+    .face.back {
+        transform: rotateY(180deg) translateZ(6px);
+    }
+
+    /* LEFT + RIGHT */
+    .face.leftc,
+    .face.rightc {
+        width: 12px;
+        height: 130px;
+    }
+
+    .face.leftc {
+        transform: rotateY(-90deg) translateZ(6px);
+    }
+
+    .face.rightc {
+        transform: rotateY(90deg) translateZ(6px);
+    }
+
+    /* TOP + BOTTOM */
+    .face.top,
+    .face.bottom {
+        width: 90px;
+        height: 12px;
+    }
+
+    .face.top {
+        transform: rotateX(90deg) translateZ(6px);
+    }
+
+    .face.bottom {
+        transform: rotateX(-90deg) translateZ(6px);
+    }
+
+    .banner .content h1 {
+        font-size: 3.5em;
+    }
+
+    .center-banner {
+        width: 240px;
+        height: 160px;
+    }
+
+    .center-banner img {
+        max-width: 180px;
+    }
+}
+
+
+
+.modal-body {
+    filter: blur(0px);
+}
+
+    .modal-body::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: url("../waterball/bg2.png")
+              center/cover;
+
+  filter: blur(12px);
+
+
+  z-index: -1;
+}
+
+
+
+.left{
+    filter: blur(0px);
+}
+
+.left::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+  background: url("images/img2.jpeg");
+  background-size: cover; 
+  filter: blur(12px);
+  z-index: -1;
+}
+
+.background-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle,
+      rgba(0, 170, 255, 0.4) 0%,
+      rgba(0, 170, 255, 0.2) 20%,
+      rgba(0, 100, 255, 0.1) 40%,
+      transparent 70%);
+  filter: blur(80px);
+  opacity: 0.6;
+}
+
+    

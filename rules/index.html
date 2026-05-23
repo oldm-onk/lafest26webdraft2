@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TV Rules UI</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../nav.css" />
+     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+</head>
+
+<body>
+<div class="crt"></div>
+
+    <div class="nav-wrapper">
+
+  <div class="nav-container" id="navContainer">
+
+    <!-- Left links -->
+    <div class="nav-left">
+      <a href="../index.html">HOME</a>
+      <a href="../eventsv1-main/index.html">EVENTS</a>
+    </div>
+
+    <!-- Center image -->
+    <div class="nav-center">
+      <img src="../visorwlogoinit.png" alt="logo" id="navToggle">
+    </div>
+
+    <!-- Right links -->
+    <div class="nav-right">
+      <a href="../leg/index.html">LEGACY</a>
+      <a href="../contacts-main/index.html">CONTACTS</a>
+    </div>
+
+  </div>
+
+</div>
+
+   
+
+    <div class="tv-wrapper">
+        
+        <svg viewBox="0 0 512 512" class="tv-svg">
+            <!-- TV IMAGE -->
+            <image href="tv.png" width="512" height="512" />
+
+            <!-- SCREEN SHAPE -->
+            <defs>
+                <clipPath id="screenClip">
+                    <!-- 🔥 Tuned to your image -->
+                    <rect x="54" y="100" width="330" height="265" rx="35" />
+                </clipPath>
+            </defs>
+
+            <!-- SCREEN CONTENT -->
+            <foreignObject x="54" y="100" width="330" height="265" clip-path="url(#screenClip)" class="br">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="screen off" id="screen">
+                    <div class="rules" id="rules">
+                        <div class="rules-header">RULES</div>
+
+                        <div class="rules-tab">GENERAL RULES</div>
+
+                        <div class="rules-box">
+                            <h2>GENERAL RULES & REGULATIONS</h2>
+
+                            <ul>
+                                <li>Registration is free of charge and limited to students of Classes IX to XII from
+                                    participating schools.</li>
+                                <li>The registration forms should be submitted by 13 June, 2026. </li>
+                                <li>Participants are required to report by 7:00 a.m. on the day of the fest.</li>
+                                <li>A maximum of 70 non-participating attendees are permitted per school.</li>
+                                <li>Each registered school must enter at least 3 events. Each student is limited to a
+                                    maximum of 2 events.</li>
+                                <li>All attendees, irrespective of participation status, must wear their school uniforms
+                                    and display their LA Fest ID cards at all times. Badges will be issued at the
+                                    registration desk.</li>
+                                <li>Entry is strictly restricted to registered students and accompanying teachers.</li>
+                                <li>Two green rooms will be allotted to each school for preparation and storage.</li>
+                                <li>Food coupons are priced at ₹350 each and are non-refundable.</li>
+                                <li>All food orders, including vegetarian and non-vegetarian preferences, must be
+                                    finalised by 13 June, 2026. Changes will not be permitted thereafter.</li>
+                                <li>The use of professional cameras within the indoor stadium is strictly prohibited.
+                                    While mobile photography is permitted for personal use, such footage will not be
+                                    accepted by the judges as evidence for disqualification.</li>
+                                <li>Choreographers will not be permitted entry into the indoor stadium.</li>
+                                <li>Food and beverages are not permitted inside the indoor stadium under any
+                                    circumstances.</li>
+                                <li>The decisions of the judges shall be final and binding.</li>
+                                <li>Participants are expected to maintain the highest standards of sportsmanship and
+                                    fair play. Usage of vulgar language, obscene actions, or disruptive behaviour will
+                                    result in immediate disqualification.</li>
+                                <li>Any use of vulgar language, obscene actions, or disruptive conduct by attendees will
+                                    not be tolerated.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </foreignObject>
+        </svg>
+
+        <!-- CLICK AREA -->
+        <div class="power-btn" id="powerBtn"></div>
+    </div>
+
+     <div class="mobile-rules">
+
+    <div class="rules">
+        <div class="rules-header">RULES</div>
+
+        <div class="rules-tab">GENERAL RULES</div>
+
+        <div class="rules-box">
+
+            <ul>
+                <li>Registration is free of charge and limited to students of Classes IX to XII from
+                                    participating schools.</li>
+                                <li>The registration forms should be submitted by 13 June, 2026. </li>
+                                <li>Participants are required to report by 7:00 a.m. on the day of the fest.</li>
+                                <li>A maximum of 70 non-participating attendees are permitted per school.</li>
+                                <li>Each registered school must enter at least 3 events. Each student is limited to a
+                                    maximum of 2 events.</li>
+                                <li>All attendees, irrespective of participation status, must wear their school uniforms
+                                    and display their LA Fest ID cards at all times. Badges will be issued at the
+                                    registration desk.</li>
+                                <li>Entry is strictly restricted to registered students and accompanying teachers.</li>
+                                <li>Two green rooms will be allotted to each school for preparation and storage.</li>
+                                <li>Food coupons are priced at ₹350 each and are non-refundable.</li>
+                                <li>All food orders, including vegetarian and non-vegetarian preferences, must be
+                                    finalised by 13 June, 2026. Changes will not be permitted thereafter.</li>
+                                <li>The use of professional cameras within the indoor stadium is strictly prohibited.
+                                    While mobile photography is permitted for personal use, such footage will not be
+                                    accepted by the judges as evidence for disqualification.</li>
+                                <li>Choreographers will not be permitted entry into the indoor stadium.</li>
+                                <li>Food and beverages are not permitted inside the indoor stadium under any
+                                    circumstances.</li>
+                                <li>The decisions of the judges shall be final and binding.</li>
+                                <li>Participants are expected to maintain the highest standards of sportsmanship and
+                                    fair play. Usage of vulgar language, obscene actions, or disruptive behaviour will
+                                    result in immediate disqualification.</li>
+                                <li>Any use of vulgar language, obscene actions, or disruptive conduct by attendees will
+                                    not be tolerated.</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+
+    <script>
+        const btn = document.getElementById("powerBtn");
+        const screen = document.getElementById("screen");
+        const rules = document.getElementById("rules");
+
+        let isOn = false;
+
+        btn.addEventListener("click", () => {
+            if (!isOn) {
+                screen.classList.remove("off");
+                screen.classList.add("boot");
+
+                setTimeout(() => {
+                    screen.classList.remove("boot");
+                    screen.classList.add("on");
+                    rules.classList.add("show");
+
+                    // Force layout reflow so scroll area is properly computed
+                    void screen.offsetWidth;
+
+                    // Optional: scroll to top on first turn-on
+                    screen.scrollTop = 0;
+                }, 600);
+            } else {
+                screen.classList.remove("on");
+                rules.classList.remove("show");
+                screen.classList.add("off");
+            }
+
+            isOn = !isOn;
+        });
+
+    </script>
+        <script>
+
+        tsParticles.load("particles-js", {
+            particles: {
+                number: {
+                    value: 70,
+                    density: { enable: true, area: 800 }
+                },
+
+                color: { value: "#DCE8FF" },
+
+                links: {
+                    enable: true,
+                    color: "#DCE8FF",
+                    distance: 120,
+                    opacity: 0.3,
+                    width: 1
+                },
+
+                move: {
+                    enable: true,
+                    speed: 0.8,
+                    outModes: { default: "bounce" }
+                },
+
+                size: {
+                    value: 2
+                }
+            },
+
+            interactivity: {
+                events: {
+                    onHover: {
+                        enable: true,
+                        mode: ["grab", "repulse"]  // 🔥 key part
+                    },
+                    onClick: {
+                        enable: true,
+                        mode: "push"
+                    }
+                },
+
+                modes: {
+                    grab: {
+                        distance: 180,
+                        links: {
+                            opacity: 1   // 🔥 lines become strong near cursor
+                        }
+                    },
+
+                    repulse: {
+                        distance: 100,
+                        duration: 1
+                    },
+
+                    push: {
+                        quantity: 4
+                    }
+                }
+            },
+
+            retina_detect: true,
+            background: {
+                color: "transparent"
+            }
+        });
+    </script>
+    <div class="particles-js"></div>
+            <script>
+        const nav = document.getElementById("navContainer");
+    const toggle = document.getElementById("navToggle");
+
+// Toggle on click (good for mobile)
+toggle.addEventListener("click", () => {
+  nav.classList.toggle("active");
+});
+
+// Optional: hover support for desktop
+nav.addEventListener("mouseenter", () => {
+  nav.classList.add("active");
+});
+
+nav.addEventListener("mouseleave", () => {
+  nav.classList.remove("active");
+});
+    </script>
+</body>
+
+</html>

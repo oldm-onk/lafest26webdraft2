@@ -1,0 +1,139 @@
+@font-face {
+    font-family: "BEASIGNE";
+    src: url("../contacts-main/Panchang-Regular.woff");
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "BEASIGNE", sans-serif;
+    font-size:0.95em;
+}
+/* wrapper */
+.nav-wrapper {
+  position: fixed;
+  top: 1px;              /* distance from top */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999999;
+
+  display: flex;
+  justify-content: center;
+}
+
+/* main container */
+.nav-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.nav-container {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 20px;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+}
+
+/* fallback styles for existing navbar markup */
+.navbar-container {
+  position: fixed;
+  top: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 20px;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+}
+
+.navbar a {
+  color: rgb(53, 141, 229);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.navbar a:hover {
+  background: white;
+  color: black;
+}
+
+/* center image */
+.nav-center img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+/* links base style */
+.nav-left, .nav-right {
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+    background: rgba(0, 6, 23, 0.532);
+  padding: 10px 20px;
+  border-radius: 50px;
+  backdrop-filter: blur(100px);
+}
+
+/* left side hidden position */
+.nav-left {
+  right: 100%;
+  transform: translateX(30px);
+}
+
+/* right side hidden position */
+.nav-right {
+  left: 100%;
+  transform: translateX(-30px);
+}
+
+/* links styling */
+.nav-left a,
+.nav-right a {
+  color: rgb(53, 141, 229);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.nav-left a:hover,
+.nav-right a:hover {
+  background: white;
+  color: black;
+  
+}
+
+/* ACTIVE STATE */
+.nav-container.active .nav-left,
+.nav-container.active .nav-right {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* optional hover effect on image */
+.nav-container.active .nav-center img {
+  transform: scale(1.1);
+}
